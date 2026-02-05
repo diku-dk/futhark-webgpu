@@ -342,10 +342,13 @@ function make_entry_function(fut, name) {
       out_ptrs.push(fut.malloc(4));
     }
 
+    console.log("Calling entry point", name, "with inputs", real_inputs);
     await fut.m.ccall(entry_info.cfun, 'number',
       Array(1 + out_ptrs.length + real_inputs.length).fill('number'),
       [fut.ctx].concat(out_ptrs).concat(real_inputs), {async: true});
-
+    
+    console.log("Entry point", name, "returned, output pointers:", out_ptrs);
+    
     let outputs = [];
     for (let i = 0; i < out_ptrs.length; i++) {
       const out_info = entry_info.outputs[i];
