@@ -33,7 +33,7 @@ This should produce:
 * `sebastian.c` (the C wrapper for the JS wrapper)
 * `sebastian.wrapper.js` 
 
-### 2) Serve the folder over HTTP
+## 2) Serve the folder over HTTP
 
 Again, using the Makefile from the example directory:
 
@@ -51,7 +51,7 @@ Open in Chrome:
 
 * `http://localhost:8000/index.html`
 
-### 3) BigInt notes (important)
+## 3) BigInt notes (important)
 
 The Sebastian Mandelbrot example uses `i64` for `screenX` and `screenY`:
 
