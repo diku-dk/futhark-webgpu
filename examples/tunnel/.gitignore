@@ -1,0 +1,6 @@
+# Futhark WebGPU generated outputs
+tunnel.js
+tunnel.wasm
+tunnel.json
+tunnel.c
+tunnel.wrapper.js
