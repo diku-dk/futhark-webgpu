@@ -1,4 +1,12 @@
 -- tunnel.fut (WebGPU/canvas version)
+--
+-- Notes:
+--  * We do NOT use Lys here. In the browser, JavaScript owns the window + timer
+--    (requestAnimationFrame) and calls `entry main` every frame.
+--  * We return one u32 per pixel, packed as RGBA bytes, because the JS canvas API
+--    wants raw RGBA bytes. This avoids the matte/colour argb.colour dependency.
+--  * We implement the 2D vector helpers locally (vadd/vsub/vdot/vnorm), so we
+--    don't need to import the vspace library just for dot/norm.
 
 type vec2 = {x: f32, y: f32}
 
@@ -51,16 +59,20 @@ def voronoise(xy: vec2, irregular: f32, smoothness: f32): f32 =
 def mod'(n: f32, d: f32): f32 =
   n - f32.i32(i32.f32(n/d)) * d
 
--- Pack to a u32 that becomes RGBA bytes in memory (little-endian):
--- bytes = [R, G, B, A]
+-- Pack (r,g,b,a) floats in [0..1] into a u32 pixel.
+-- IMPORTANT: We pack so that the underlying bytes in memory become:
+--   [R, G, B, A]
+-- This matches what ImageData.data expects in JavaScript.
 def rgba_u32 (r: f32) (g: f32) (b: f32) (a: f32): u32 =
   let cc (x: f32) = clamp(0f32, x, 1f32)
   let ri = u32.f32 (cc r * 255f32)
   let gi = u32.f32 (cc g * 255f32)
   let bi = u32.f32 (cc b * 255f32)
-  let ai = u32.f32 (cc a * 255f32)
+  let ai = u32.f32 (cc a * 255f32) -- opacity
   in (ai << 24) | (bi << 16) | (gi << 8) | ri
 
+-- Compute one pixel of the tunnel at (x,y) for a given time.
+-- Time makes the texture move, which creates the "flying through a tunnel" animation.
 def tunnel(time: f32) (x: i32) (y: i32): u32 =
   let pt2 = {x=1.2f32 * f32.i32 x, y=1.2f32 * f32.i32 y}
   let rInv = 1.0f32 / vnorm pt2
@@ -70,6 +82,9 @@ def tunnel(time: f32) (x: i32) (y: i32): u32 =
   let v = voronoise({x=5.0f32*pt3.x, y=5.0f32*pt3.y}, 1.0f32, 1.0f32) + 0.240f32*rInv
   in rgba_u32 (c1.0 * v) (c1.1 * v) (c1.2 * v) 1.0f32
 
+-- Entry point called from JavaScript every frame:
+-- JS computes time using requestAnimationFrame timestamps,
+-- then calls this to produce an HxW image.
 entry main (time: f32) (h: i32) (w: i32) =
   let hi = i64.i32 h
   let wi = i64.i32 w

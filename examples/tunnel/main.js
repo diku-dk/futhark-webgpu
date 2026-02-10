@@ -13,16 +13,19 @@ async function run() {
   function log(line) {
     logLines.push(line);
     if (logLines.length > LOG_MAX_LINES) {
-      logLines.splice(0, logLines.length - LOG_MAX_LINES);
+      logLines.splice(0, logLines.length - LOG_MAX_LINES); // buffer
     }
     statusEl.textContent = logLines.join("\n");
     statusBox.scrollTop = statusBox.scrollHeight;
   }
 
-  // --- Basic environment checks (like the Mandelbrot demo) ---
+  // environment checks
   log("Checking WebGPU support...");
   const hasWebGPU = typeof navigator !== "undefined" && !!navigator.gpu;
   log(hasWebGPU ? "WebGPU available." : "WebGPU NOT available.");
+
+  const hasSAB = typeof SharedArrayBuffer !== "undefined";
+  log(hasSAB ? "SharedArrayBuffer available." : "SharedArrayBuffer NOT available.");
 
   if (!hasWebGPU) {
     log("");
@@ -30,12 +33,11 @@ async function run() {
     return;
   }
 
-  // --- Initialize the generated Futhark/WebGPU module ---
   log("Initializing Emscripten module...");
-  const m = await Module();          // from generated build/tunnel.js
+  const m = await Module();
 
   log("Creating Futhark context (WebGPU device)...");
-  const fut = new FutharkModule();   // from generated build/tunnel.js
+  const fut = new FutharkModule(); 
   await fut.init(m);
   log("Futhark context ready.");
 
@@ -53,7 +55,7 @@ async function run() {
   speedEl.addEventListener("input", updateSpeedLabel);
   updateSpeedLabel();
 
-  // --- Animation loop ---
+  // animation loop starts here
   let t = 0.0;               // simulation time passed to Futhark
   let lastNow = performance.now();
 
@@ -66,15 +68,15 @@ async function run() {
     const dt = (now - lastNow) / 1000.0;
     lastNow = now;
 
-    // Advance time based on slider
+    // advance time based on slider
     t += dt * currentSpeed();
 
-    // Render one frame
+    // render one frame
     const tCompute0 = performance.now();
     const res = await fut.entry.main(t, height, width);
     const buf = Array.isArray(res) ? res[0] : res;
 
-    const vals = await buf.values(); // expected to be Uint32Array-like
+    const vals = await buf.values();
     const bytes = new Uint8Array(vals.buffer, vals.byteOffset, vals.length * 4);
 
     imgData.data.set(bytes);
