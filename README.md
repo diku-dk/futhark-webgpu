@@ -22,24 +22,6 @@ Useful pages:
 
 ## Emscripten (emcc) setup
 
-### WebGPU flag change in newer Emscripten
-Newer Emscripten versions no longer support:
-
-- `-sUSE_WEBGPU=1`
-
-For WebGPU builds, use:
-
-- `--use-port=emdawnwebgpu`
-
-In this repository, the only usage of `-sUSE_WEBGPU=1` for the Futhark WebGPU
-backend is in `Actions.hs`.
-
-I used this to locate occurrences:
-
-```bash
-grep -R "USE_WEBGPU" -n .
-````
-
 ### Check installed Emscripten versions
 
 From an `emsdk` checkout:
@@ -50,7 +32,7 @@ From an `emsdk` checkout:
 
 ### Known working version
 
-`emcc` version **3.1.68** works for the current setup.
+`emcc` version **5.0.0** works for the current setup.
 
 In order to confirm the `emcc` version:
 
