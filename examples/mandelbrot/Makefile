@@ -1,8 +1,8 @@
-# Example: Sebastian Mandelbrot (Futhark WebGPU)
+# Example: Mandelbrot (Futhark WebGPU)
 # Generates the JS/WASM wrapper bundle using:
-#   futhark webgpu --library -o sebastian sebastian.fut
+#   futhark webgpu --library -o mandelbrot mandelbrot.fut
 
-PROG := sebastian
+PROG := mandelbrot
 FUT  := $(PROG).fut
 
 GEN  := $(PROG).js \
