@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+  <body>
+    <pre id="out">starting...</pre>
+
+    <!-- Load generated output as classic scripts (defines globals like Module and FutharkModule) -->
+    <script src="./test1.js"></script>
+    <script src="./test1.wrapper.js"></script>
+
+    <script>
+      async function run() {
+        const out = document.getElementById("out");
+
+        // We expect COOP/COEP headers from serve_test1, so SAB can work if needed.
+        if (!crossOriginIsolated) {
+          out.textContent = "FAIL: crossOriginIsolated is false (COOP/COEP headers missing).";
+          throw new Error("crossOriginIsolated is false");
+        }
+
+        // Sanity: these must exist if the scripts loaded correctly.
+        console.log("typeof Module =", typeof Module);
+        console.log("typeof FutharkModule =", typeof FutharkModule);
+
+        if (typeof Module !== "function") {
+          throw new Error("Module() not found. test1.js may not have loaded or is not a classic script.");
+        }
+        if (typeof FutharkModule !== "function") {
+          throw new Error("FutharkModule not found. test1.wrapper.js may not have loaded.");
+        }
+
+        const m = await Module();           // Emscripten module instance
+        const fut = new FutharkModule();    // Futhark wrapper instance
+        await fut.init(m);
+
+        // entry.main returns an array of results
+        const [r] = await fut.entry.main(40, 2);
+
+        if (Number(r) !== 42) {
+          throw new Error("Wrong result: " + r);
+        }
+
+        console.log("FUTHARK_WEBGPU_TEST1_OK");
+        out.textContent = "OK";
+      }
+
+      window.addEventListener("load", () => {
+        run().catch((e) => {
+          console.error("FUTHARK_WEBGPU_TEST1_FAIL", e);
+          const out = document.getElementById("out");
+          if (out) out.textContent = "FAIL: " + e;
+        });
+      });
+    </script>
+  </body>
+</html>

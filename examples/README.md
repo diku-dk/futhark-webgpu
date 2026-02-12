@@ -22,16 +22,16 @@ make
 You can also do it manually from the example directory (or wherever the `.fut` lives):
 
 ```bash
-futhark webgpu --library -o sebastian sebastian.fut
+futhark webgpu --library -o example_name example_name.fut
 ```
 
 This should produce:
 
-* `sebastian.js`
-* `sebastian.wasm`
-* `sebastan.json` (manifest for the JS wrapper)
-* `sebastian.c` (the C wrapper for the JS wrapper)
-* `sebastian.wrapper.js` 
+* `example_name.js`
+* `example_name.wasm`
+* `example_name.json` (manifest for the JS wrapper)
+* `example_name.c` (the C wrapper for the JS wrapper)
+* `example_name.wrapper.js` 
 
 ## 2) Serve the folder over HTTP
 
@@ -51,14 +51,3 @@ Open in Chrome:
 
 * `http://localhost:8000/index.html`
 
-## 3) BigInt notes (important)
-
-The Sebastian Mandelbrot example uses `i64` for `screenX` and `screenY`:
-
-```futhark
-entry main (screenX : i64) (screenY : i64) ...
-```
-
-I still get this error in Chrome when I try to use `i64`:
-
-* `TypeError: Cannot convert <number> to a BigInt`
