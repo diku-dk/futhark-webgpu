@@ -49,9 +49,6 @@ let ok = false;
 page.on("console", (msg) => {
   const t = msg.text();
   if (t.includes("FUTHARK_WEBGPU_TEST1_OK")) ok = true;
-});
-
-page.on("console", (msg) => {
   // Print browser console logs with type + location if available
   const loc = msg.location();
   const where = loc?.url ? ` (${loc.url}:${loc.lineNumber}:${loc.columnNumber})` : "";

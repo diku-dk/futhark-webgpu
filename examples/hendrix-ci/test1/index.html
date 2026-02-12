@@ -3,7 +3,7 @@
   <body>
     <pre id="out">starting...</pre>
 
-    <!-- Load generated output as classic scripts (defines globals like Module and FutharkModule) -->
+    <!-- Load generated output -->
     <script src="./test1.js"></script>
     <script src="./test1.wrapper.js"></script>
 
@@ -11,13 +11,13 @@
       async function run() {
         const out = document.getElementById("out");
 
-        // We expect COOP/COEP headers from serve_test1, so SAB can work if needed.
+        // We expect COOP/COEP headers from serve_test1
         if (!crossOriginIsolated) {
           out.textContent = "FAIL: crossOriginIsolated is false (COOP/COEP headers missing).";
           throw new Error("crossOriginIsolated is false");
         }
 
-        // Sanity: these must exist if the scripts loaded correctly.
+        // these must exist if the scripts loaded correctly.
         console.log("typeof Module =", typeof Module);
         console.log("typeof FutharkModule =", typeof FutharkModule);
 
