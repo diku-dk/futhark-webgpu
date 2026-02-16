@@ -4,46 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ARGB vs Canvas test (JS + Futhark)</title>
-  <style>
-    body { font-family: system-ui, sans-serif; padding: 16px; }
-    .row { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
-    .panel { width: 520px; }
-    canvas {
-      border: 1px solid #ccc;
-      width: 512px;
-      height: 128px;
-      image-rendering: pixelated;
-      display: block;
-    }
-    .label { margin: 8px 0; font-weight: 600; }
-    .hint { color: #444; margin-top: 12px; }
-    code { background: #f5f5f5; padding: 2px 6px; border-radius: 6px; }
-
-    .statusBox {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 8px;
-      height: 140px;
-      overflow: auto;
-      background: #fafafa;
-      white-space: pre-wrap;
-    }
-
-    .controls {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      flex-wrap: wrap;
-      margin: 12px 0;
-    }
-    select, button {
-      padding: 6px 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      background: white;
-      font: inherit;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h2>ARGB (u32) -> Canvas ImageData channel order test (JS + Futhark)</h2>
