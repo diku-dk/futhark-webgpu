@@ -16,7 +16,7 @@ async function run() {
     statusEl.textContent = "";
   }
 
-  // --- Endianness helper (mostly academic; browsers are almost always little-endian) ---
+  // --- Endianness helper (browsers are almost always little-endian from what i understand) ---
   function isLittleEndian() {
     const b = new ArrayBuffer(4);
     new Uint32Array(b)[0] = 0x01020304;
@@ -38,7 +38,8 @@ async function run() {
     ) >>> 0;
   }
 
-  // Robust conversion to RGBA bytes (works regardless of endianness):
+  // Robust conversion to RGBA bytes (works regardless of endianness)
+  // slower because it writes each byte separately, but no need to care about endianness.
   function argbToRgbaBytes(dstU8, srcU32) {
     for (let i = 0; i < srcU32.length; i++) {
       const x = srcU32[i] >>> 0;       // 0xAARRGGBB

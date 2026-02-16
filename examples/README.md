@@ -11,6 +11,8 @@ will probably not work.
 
 # Building and running an example
 
+The generated files are kept out of the repository, so you will need to build them yourself. You may follow the instructions below to build and run the examples.
+
 ## 1) Compile the Futhark program with the WebGPU backend
 
 Easiest way to do it is using the Makefile from the example directory:

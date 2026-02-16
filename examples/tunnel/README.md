@@ -9,22 +9,6 @@ The important part (for this repository) is that the animation is **driven by a 
 A tunnel-like pattern with a center "vanishing point" and a moving texture.  
 Changing the **Time scale** slider makes the animation move faster/slower (0 freezes it).
 
-
-## Build & run
-
-Generated files are kept out of the repository. Use the Makefile:
-
-```sh
-make build
-make serve
-```
-
-Then open:
-
-```text
-http://localhost:8000/
-```
-
 ## Files
 
 * `tunnel.fut`
