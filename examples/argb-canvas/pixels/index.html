@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ARGB vs Canvas test (JS + Futhark)</title>
+  <style>
+    body { font-family: system-ui, sans-serif; padding: 16px; }
+    .row { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+    .panel { width: 520px; }
+    canvas {
+      border: 1px solid #ccc;
+      width: 512px;
+      height: 128px;
+      image-rendering: pixelated;
+      display: block;
+    }
+    .label { margin: 8px 0; font-weight: 600; }
+    .hint { color: #444; margin-top: 12px; }
+    code { background: #f5f5f5; padding: 2px 6px; border-radius: 6px; }
+
+    .statusBox {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 8px;
+      height: 140px;
+      overflow: auto;
+      background: #fafafa;
+      white-space: pre-wrap;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin: 12px 0;
+    }
+    select, button {
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      background: white;
+      font: inherit;
+    }
+  </style>
+</head>
+<body>
+  <h2>ARGB (u32) -> Canvas ImageData channel order test (JS + Futhark)</h2>
+
+  <div class="controls">
+    <label>
+      Source:
+      <select id="source">
+        <option value="js" selected>JS generator (ARGB)</option>
+        <option value="js_canvas">JS generator (already canvas format)</option>
+        <option value="futhark">Futhark generator (ARGB)</option>
+      </select>
+    </label>
+
+    <button id="renderBtn">Render</button>
+
+    <label style="display:flex; gap:8px; align-items:center;">
+      <input id="autoRender" type="checkbox" checked />
+      Auto render on change
+    </label>
+  </div>
+
+  <div class="label">Status</div>
+  <div class="statusBox"><pre id="status"></pre></div>
+
+  <div class="row" style="margin-top: 16px;">
+    <div class="panel">
+      <div class="label">Raw (write ARGB u32 directly) -> WRONG (R/B swapped)</div>
+      <canvas id="cRaw"></canvas>
+    </div>
+
+    <div class="panel">
+      <div class="label">Fixed (convert ARGB -> canvas word format - ABGR) -> CORRECT</div>
+      <canvas id="cFixed"></canvas>
+    </div>
+  </div>
+
+  <p class="hint">
+    Expected stripes (correct): <code>Red | Green | Blue | White</code><br/>
+    Raw will typically show: <code>Blue | Green | Red | White</code>
+  </p>
+
+  <!-- main.js dynamically loads pixels.js only if you select "Futhark generator" -->
+  <script src="main.js"></script>
+</body>
+</html>
