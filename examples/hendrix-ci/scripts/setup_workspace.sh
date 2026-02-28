@@ -6,15 +6,26 @@ FUTHARK_DIR="${BASE}/futhark"
 WEBGPU_DIR="${BASE}/futhark-webgpu"
 export PATH="$HOME/.local/bin:$PATH"
 
-# ---- Hendrix modules (assumes module is available in this shell)
+# ---- Hendrix modules
+# Ensure 'module' works in non-interactive shells (CI/fake HOME tests)
+if ! type module >/dev/null 2>&1; then
+  [ -f /etc/profile.d/modules.sh ] && source /etc/profile.d/modules.sh
+  [ -f /usr/share/Modules/init/bash ] && source /usr/share/Modules/init/bash
+fi
+
 module load gcc/11.2.0
 module load gmp/6.2.1
 module load perl/5.38.0
 module load python   # needed for emcc in your setup
+python3 --version
+which python3
 
 # ---- ghcup + GHC/Cabal (user-local)
 if [ ! -f "${HOME}/.ghcup/env" ]; then
-  curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh -s -- -y
+  curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | \
+    BOOTSTRAP_HASKELL_NONINTERACTIVE=1 \
+    BOOTSTRAP_HASKELL_MINIMAL=1 \
+    sh
 fi
 # shellcheck source=/dev/null
 source "${HOME}/.ghcup/env"

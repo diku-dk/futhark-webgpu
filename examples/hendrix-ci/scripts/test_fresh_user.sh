@@ -10,7 +10,10 @@ FAKEHOME="/tmp/$USER/fakehome-webgpu-1"
 RUN_WEBGPU_TESTS=1
 CLEANUP=0
 
-rm -rf "$FAKEHOME"
+RESET_FAKEHOME=0
+if [ "$RESET_FAKEHOME" -eq 1 ]; then
+  rm -rf "$FAKEHOME"
+fi
 mkdir -p "$FAKEHOME"
 
 echo "== Using fake HOME: $FAKEHOME =="
