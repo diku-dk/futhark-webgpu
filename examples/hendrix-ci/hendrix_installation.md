@@ -1,3 +1,10 @@
+# Installation script
+We have set up a script to automate the installation process. You can run it, after cloning the `futhark-webgpu` repo, with:
+
+```bash
+~/fut-webgpu/futhark-webgpu/examples/hendrix-ci/scripts/run_tests.sh
+```
+
 # Hendrix installation & build guide (Futhark WebGPU)
 
 This document describes a **repeatable, per-user** setup for building a WebGPU-enabled Futhark compiler on DIKU’s Hendrix cluster (e.g. `hendrixfut03fl`).
