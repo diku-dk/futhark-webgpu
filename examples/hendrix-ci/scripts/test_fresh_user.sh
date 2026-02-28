@@ -53,12 +53,14 @@ run_in_fakehome '
 if [ "$RUN_WEBGPU_TESTS" -eq 1 ]; then
   echo "== 4) Running WebGPU checks/tests =="
   run_in_fakehome '
+    module load python/3.12.8
     export PATH="$HOME/.local/bin:$PATH"
     source "$HOME/.ghcup/env"
     source "$HOME/opt/emsdk/emsdk_env.sh"
 
     cd "$HOME/fut-webgpu/futhark-webgpu/examples/hendrix-ci"
-    npm install
+    npm init -y
+    npm i playwright
     npx playwright install chromium
     node check-headless/check_webgpu.mjs
     make -C test1 run

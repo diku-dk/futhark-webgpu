@@ -11,18 +11,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 cd "${TESTROOT}"
 
-# # Create Node project files on first run as they are not committed
-# if [ ! -f package.json ]; then
-#   npm init -y >/dev/null
-
-#   npm pkg set type=module >/dev/null
-
-#   # Install Playwright as a dependency so check_webgpu.mjs can import it
-#   npm install --save-dev playwright >/dev/null
-# fi
-
 # Playwright deps
-npm install @playwright/test 
+npm init -y
+npm i playwright
 npx playwright install chromium
 
 # 1) headless WebGPU check

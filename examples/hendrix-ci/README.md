@@ -13,7 +13,8 @@ The purpose is to validate that:
 From inside `hendrix-ci/`:
 
 ```bash
-npm install
+npm init -y
+npm i playwright
 npx playwright install chromium
 ```
 
