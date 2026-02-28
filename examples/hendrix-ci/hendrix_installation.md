@@ -38,7 +38,6 @@ You need this to build the WebGPU-enabled compiler:
 ```bash
 git clone https://github.com/diku-dk/futhark.git
 cd futhark
-# checkout your WebGPU branch (example)
 git checkout webgpu
 ```
 

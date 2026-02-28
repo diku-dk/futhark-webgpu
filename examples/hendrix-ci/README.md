@@ -6,6 +6,8 @@ The purpose is to validate that:
 1) WebGPU is available in a **headless browser** on Hendrix.
 2) A **Futhark WebGPU-compiled program** can be executed headlessly and produces the correct result.
 
+**Make sure to check `hendrix_installation.md` for installation instructions and troubleshooting tips.**
+
 ## Prerequisites (one-time)
 
 From inside `hendrix-ci/`:
