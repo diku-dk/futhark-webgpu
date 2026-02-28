@@ -16,7 +16,7 @@ fi
 module load gcc/11.2.0
 module load gmp/6.2.1
 module load perl/5.38.0
-module load python   # needed for emcc in your setup
+module load python/3.12.8   # needed for emcc in your setup
 python3 --version
 which python3
 
@@ -53,8 +53,8 @@ fi
 # Only (re)activate if emcc isn't working in this shell
 if ! command -v emcc >/dev/null 2>&1; then
   pushd "${HOME}/opt/emsdk" >/dev/null
-  ./emsdk install latest
-  ./emsdk activate latest
+  ./emsdk install 5.0.0
+  ./emsdk activate 5.0.0
   export EMSDK_QUIET=1
   source "${HOME}/opt/emsdk/emsdk_env.sh"
   popd >/dev/null

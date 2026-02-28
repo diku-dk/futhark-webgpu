@@ -34,6 +34,8 @@ run_in_fakehome 'test -d "$HOME/fut-webgpu/futhark-webgpu/.git" && echo "OK: fut
 
 echo "== 3) Verifying tool installs =="
 run_in_fakehome '
+  module load python/3.12.8
+
   export PATH="$HOME/.local/bin:$PATH"
   [ -f "$HOME/.ghcup/env" ] && source "$HOME/.ghcup/env"
   [ -f "$HOME/opt/emsdk/emsdk_env.sh" ] && source "$HOME/opt/emsdk/emsdk_env.sh"
@@ -41,9 +43,12 @@ run_in_fakehome '
   echo "futhark: $(command -v futhark)"
   futhark --version | head -n 2
 
+  python3 --version
+
   echo "emcc: $(command -v emcc)"
   emcc -v | head -n 2
 '
+
 
 if [ "$RUN_WEBGPU_TESTS" -eq 1 ]; then
   echo "== 4) Running WebGPU checks/tests =="
