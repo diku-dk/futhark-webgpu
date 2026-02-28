@@ -38,6 +38,12 @@ if [ "$(ghc --numeric-version 2>/dev/null || true)" != "9.10.3" ]; then
   ghcup set ghc 9.10.3
 fi
 
+# Ensure cabal is available (minimal ghcup bootstrap does not always install it)
+if ! command -v cabal >/dev/null 2>&1; then
+  ghcup install cabal
+  ghcup set cabal
+fi
+
 # ---- emsdk (user-local)
 mkdir -p "${HOME}/opt"
 if [ ! -d "${HOME}/opt/emsdk" ]; then
