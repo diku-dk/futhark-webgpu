@@ -68,10 +68,31 @@ fi
 export LIBRARY_PATH="${HOME}/.local/lib:${LIBRARY_PATH:-}"
 export LD_LIBRARY_PATH="${HOME}/.local/lib:${LD_LIBRARY_PATH:-}"
 
+# ---- node + npm (user-local)
+NODE_VERSION="22.16.0"
+NODE_DIR="${HOME}/opt/node-v${NODE_VERSION}-linux-x64"
+NODE_BIN="${NODE_DIR}/bin"
+
+mkdir -p "${HOME}/opt"
+
+if [ ! -x "${NODE_BIN}/node" ]; then
+  TARBALL="node-v${NODE_VERSION}-linux-x64.tar.xz"
+  URL="https://nodejs.org/dist/v${NODE_VERSION}/${TARBALL}"
+
+  # clean partial installs if they exist
+  rm -rf "${NODE_DIR}"
+
+  curl -fsSL -o "${HOME}/opt/${TARBALL}" "${URL}"
+  tar -xf "${HOME}/opt/${TARBALL}" -C "${HOME}/opt"
+fi
+
+# Ensure our Node (with npm) wins over emsdk's node
+export PATH="${NODE_BIN}:${PATH}"
+
 # ---- Ensure workspace layout
 mkdir -p "${BASE}"
 
-# ---- Clone or update futhark (webgpu branch)
+# ---- webgpu branch
 if [ ! -d "${FUTHARK_DIR}/.git" ]; then
   git clone https://github.com/diku-dk/futhark.git "${FUTHARK_DIR}"
 fi
@@ -99,7 +120,6 @@ fi
 
 popd >/dev/null
 
-# ---- Clone or update futhark-webgpu
 if [ ! -d "${WEBGPU_DIR}/.git" ]; then
   git clone https://github.com/diku-dk/futhark-webgpu.git "${WEBGPU_DIR}"
 fi
@@ -111,3 +131,5 @@ popd >/dev/null
 echo "OK: workspace ready at ${BASE}"
 echo "OK: futhark is $(command -v futhark)"
 echo "OK: emcc is $(command -v emcc)"
+echo "OK: node is $(command -v node)"
+echo "OK: npm is $(command -v npm)"

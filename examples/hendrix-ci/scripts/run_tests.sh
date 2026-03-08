@@ -7,7 +7,9 @@ TESTROOT="${WEBGPU_DIR}/examples/hendrix-ci"
 
 # Ensure env is set (modules/ghcup/emsdk + futhark install)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-"${SCRIPT_DIR}/setup_workspace.sh"
+
+# Source so that PATH/env changes (node, emsdk, etc.) persist in this script
+source "${SCRIPT_DIR}/setup_workspace.sh"
 
 cd "${TESTROOT}"
 

@@ -10,7 +10,7 @@ FAKEHOME="/tmp/$USER/fakehome-webgpu-1"
 RUN_WEBGPU_TESTS=1
 CLEANUP=0
 
-RESET_FAKEHOME=0
+RESET_FAKEHOME=1
 if [ "$RESET_FAKEHOME" -eq 1 ]; then
   rm -rf "$FAKEHOME"
 fi
