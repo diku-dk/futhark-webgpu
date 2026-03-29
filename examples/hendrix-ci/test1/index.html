@@ -15,13 +15,38 @@
       async function run() {
         const out = document.getElementById("out");
 
-        // We expect COOP/COEP headers from serve_test1
+        window.addEventListener("error", (e) => {
+          console.error("WINDOW_ERROR", e.message);
+        });
+
+        window.addEventListener("unhandledrejection", (e) => {
+          console.error("UNHANDLED_REJECTION", String(e.reason));
+        });
+
+        console.log("crossOriginIsolated =", crossOriginIsolated);
+        console.log("navigator.gpu =", typeof navigator.gpu);
+        console.log("userAgent =", navigator.userAgent);
+
         if (!crossOriginIsolated) {
           out.textContent = "FAIL: crossOriginIsolated is false (COOP/COEP headers missing).";
           throw new Error("crossOriginIsolated is false");
         }
 
-        // these must exist if the scripts loaded correctly.
+        if (!navigator.gpu) {
+          out.textContent = "FAIL: navigator.gpu missing";
+          throw new Error("navigator.gpu missing");
+        }
+
+        const adapter = await navigator.gpu.requestAdapter();
+        if (!adapter) {
+          out.textContent = "FAIL: requestAdapter returned null";
+          throw new Error("requestAdapter returned null");
+        }
+
+        const features = [...adapter.features].sort();
+        console.log("adapter.features =", JSON.stringify(features));
+        console.log("adapter has shader-f16 =", adapter.features.has("shader-f16"));
+
         console.log("typeof Module =", typeof Module);
         console.log("typeof FutharkModule =", typeof FutharkModule);
 
@@ -32,15 +57,20 @@
           throw new Error("FutharkModule not found. test1.wrapper.js may not have loaded.");
         }
 
-        const m = await Module();           // Emscripten module instance
-        const fut = new FutharkModule();    // Futhark wrapper instance
+        const m = await Module();
+        const fut = new FutharkModule();
         await fut.init(m);
 
-        // entry.main returns an array of results
-        const [r] = await fut.entry.main(40, 2);
+        const n = 50000;
+        const expected = (n * (n + 1)) / 2;
 
-        if (Number(r) !== 42) {
-          throw new Error("Wrong result: " + r);
+        const [r] = await fut.entry.main(n);
+
+        console.log("computed result =", r);
+        console.log("expected result =", expected);
+
+        if (Number(r) !== expected) {
+          throw new Error("Wrong result: " + r + " (expected " + expected + ")");
         }
 
         console.log("FUTHARK_WEBGPU_TEST1_OK");

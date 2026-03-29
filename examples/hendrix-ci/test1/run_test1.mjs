@@ -1,6 +1,5 @@
 import { chromium } from "playwright";
 import { spawn } from "child_process";
-
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -46,50 +45,106 @@ const browser = await chromium.launch({
 const page = await browser.newPage();
 
 let ok = false;
+let timedOut = false;
+const fatalConsole = [];
+const pageErrors = [];
+const requestFailures = [];
+const httpErrors = [];
+
+const fatalPatterns = [
+  /FUTHARK_WEBGPU_TEST1_FAIL/,
+  /Could not get WebGPU device/,
+  /Unsupported feature:/,
+  /program exited \(with status: -1\)/,
+  /WINDOW_ERROR/,
+  /UNHANDLED_REJECTION/,
+];
+
 page.on("console", (msg) => {
-  const t = msg.text();
-  if (t.includes("FUTHARK_WEBGPU_TEST1_OK")) ok = true;
-  // Print browser console logs with type + location if available
+  const text = msg.text();
   const loc = msg.location();
   const where = loc?.url ? ` (${loc.url}:${loc.lineNumber}:${loc.columnNumber})` : "";
-  console.log(`[browser:${msg.type()}] ${msg.text()}${where}`);
-});
+  console.log(`[browser:${msg.type()}] ${text}${where}`);
 
-page.on("pageerror", (err) => {
-  console.log("[pageerror]", err?.stack || String(err));
-});
+  if (text.includes("FUTHARK_WEBGPU_TEST1_OK")) {
+    ok = true;
+  }
 
-page.on("requestfailed", (req) => {
-  console.log("[requestfailed]", req.url(), req.failure()?.errorText);
-});
-
-page.on("response", (res) => {
-  // Useful for catching 404s (missing wrapper/wasm/js)
-  if (res.status() >= 400) {
-    console.log("[http]", res.status(), res.url());
+  if (fatalPatterns.some((re) => re.test(text))) {
+    fatalConsole.push(`[${msg.type()}] ${text}${where}`);
   }
 });
 
+page.on("pageerror", (err) => {
+  const msg = err?.stack || String(err);
+  pageErrors.push(msg);
+  console.log("[pageerror]", msg);
+});
+
+page.on("requestfailed", (req) => {
+  const msg = `${req.url()} ${req.failure()?.errorText}`;
+  requestFailures.push(msg);
+  console.log("[requestfailed]", msg);
+});
+
+page.on("response", (res) => {
+  if (res.status() >= 400) {
+    const msg = `${res.status()} ${res.url()}`;
+    httpErrors.push(msg);
+    console.log("[http]", msg);
+  }
+});
 
 await page.goto(url, { waitUntil: "load" });
 
-// wait up to 20s for OK
-const start = Date.now();
-while (!ok && Date.now() - start < 20000) {
-  await new Promise((r) => setTimeout(r, 100));
+try {
+  await page.waitForFunction(() => {
+    const el = document.getElementById("out");
+    if (!el) return false;
+    const t = el.textContent || "";
+    return t === "OK" || t.startsWith("FAIL:");
+  }, null, { timeout: 20000 });
+} catch (e) {
+  timedOut = true;
+  console.log("[timeout waiting for #out to become OK/FAIL]");
 }
 
 const outText = await page.evaluate(() => {
   const el = document.getElementById("out");
   return el ? el.textContent : "(no #out element)";
 });
+
 console.log("[page #out]", outText);
 console.log("[info] loaded url:", url);
 
 await browser.close();
 proc.kill("SIGTERM");
 
-if (!ok) {
-  console.error("Did not observe FUTHARK_WEBGPU_TEST1_OK in console.");
+if (!ok || outText !== "OK" || timedOut || fatalConsole.length > 0 || pageErrors.length > 0 || requestFailures.length > 0 || httpErrors.length > 0) {
+  console.error("=== TEST FAILURE SUMMARY ===");
+  console.error("ok seen:", ok);
+  console.error("timed out:", timedOut);
+  console.error("page #out:", outText);
+
+  if (fatalConsole.length) {
+    console.error("--- fatal console messages ---");
+    for (const x of fatalConsole) console.error(x);
+  }
+
+  if (pageErrors.length) {
+    console.error("--- page errors ---");
+    for (const x of pageErrors) console.error(x);
+  }
+
+  if (requestFailures.length) {
+    console.error("--- request failures ---");
+    for (const x of requestFailures) console.error(x);
+  }
+
+  if (httpErrors.length) {
+    console.error("--- http errors ---");
+    for (const x of httpErrors) console.error(x);
+  }
+
   process.exit(1);
 }
