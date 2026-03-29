@@ -61,6 +61,14 @@
         const fut = new FutharkModule();
         await fut.init(m);
 
+        if (!adapter.features.has("shader-f16")) {
+          const msg =
+            "FAIL: adapter does not expose shader-f16; current Futhark WebGPU runtime appears to require it.";
+          console.error(msg);
+          out.textContent = msg;
+          throw new Error(msg);
+        }
+
         const n = 50000;
         const expected = (n * (n + 1)) / 2;
 
