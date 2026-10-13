@@ -93,7 +93,16 @@
     };
   }
 
-  function outputsToState(out) {
+  // The entry points return the state as a tuple, which is an opaque record
+  // whose fields we project, in order.
+  async function outputsToState(out) {
+    const fields = fut.manifest.types[out.futharkType()].record.fields;
+    const vals = [];
+    for (const f of fields) {
+      vals.push(await fut[f.project.replace(/^futhark_/, "")](out));
+    }
+    out.free();
+
     const [
       time,
       h,
@@ -107,7 +116,7 @@
       mouseX,
       radius,
       paused,
-    ] = out;
+    ] = vals;
 
     return {
       time,
@@ -286,7 +295,7 @@
 
     const seed = Date.now() >>> 0;
     const out = await fut.entry.init(seed, height, width);
-    state = outputsToState(out);
+    state = await outputsToState(out);
 
     console.log("decoded state after init:", state);
     setLastAction("State initialized.");
@@ -305,7 +314,7 @@
     canvas.height = height;
 
     const out = await fut.entry.resize(height, width, ...stateToArgs(state));
-    state = outputsToState(out);
+    state = await outputsToState(out);
 
     setLastAction("State resized.");
   }
@@ -349,25 +358,25 @@
   async function stepState(dt) {
     if (!state) return;
     const out = await fut.entry.step(dt, ...stateToArgs(state));
-    state = outputsToState(out);
+    state = await outputsToState(out);
   }
 
   async function keyState(kind, key) {
     if (!state) return;
     const out = await fut.entry.key(kind, key, ...stateToArgs(state));
-    state = outputsToState(out);
+    state = await outputsToState(out);
   }
 
   async function mouseState(buttons, x, y) {
     if (!state) return;
     const out = await fut.entry.mouse(buttons, x, y, ...stateToArgs(state));
-    state = outputsToState(out);
+    state = await outputsToState(out);
   }
 
   async function wheelState(dx, dy) {
     if (!state) return;
     const out = await fut.entry.wheel(dx, dy, ...stateToArgs(state));
-    state = outputsToState(out);
+    state = await outputsToState(out);
   }
 
   async function restart() {
