@@ -12,7 +12,7 @@ async function run() {
   const [xmin, xmax] = [-1.7, 1.1];
   const [ymin, ymax] = [-1.4, 1.4];
 
-  const [buf] = await fut.entry.main(
+  const buf = await fut.entry.main(
     BigInt(width),
     BigInt(height),
     max_depth,

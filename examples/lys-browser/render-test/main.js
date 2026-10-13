@@ -318,7 +318,7 @@
     const width = canvas.width;
     const height = canvas.height;
 
-    const [buf] = await fut.entry.render(...stateToArgs(state));
+    const buf = await fut.entry.render(...stateToArgs(state));
     const argb = await buf.values();
     buf.free();
 

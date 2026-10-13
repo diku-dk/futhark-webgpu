@@ -37,7 +37,7 @@ This produces:
     * `await fut.init(m);`
   * Runs:
 
-    * `const [r] = await fut.entry.main(40, 2);`
+    * `const r = await fut.entry.main(n);`
   * On success:
 
     * prints `FUTHARK_WEBGPU_TEST1_OK` to the browser console

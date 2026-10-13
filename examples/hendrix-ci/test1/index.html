@@ -72,7 +72,7 @@
         const n = 50000;
         const expected = (n * (n + 1)) / 2;
 
-        const [r] = await fut.entry.main(n);
+        const r = await fut.entry.main(n);
 
         console.log("computed result =", r);
         console.log("expected result =", expected);
