@@ -27,6 +27,10 @@ const browser = await chromium.launch({
     "--enable-features=Vulkan,WebGPU",
     "--ignore-gpu-blocklist",
     "--use-angle=vulkan",
+    // Without this, headless Chrome falls back to SwiftShader.
+    "--disable-vulkan-surface",
+    // Dawn hides shader-f16 on NVIDIA drivers older than 615.71.
+    "--enable-dawn-features=vulkan_enable_f16_on_nvidia",
   ],
 });
 
